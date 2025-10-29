@@ -1,0 +1,48 @@
+
+
+1단계. 쇼핑몰 시스템 주요 클래스 정의
+
+쇼핑몰 시스템의 핵심 개체들을 식별합니다.
+
+| 클래스           | 주요 속성                                      | 주요 메서드                                    | 관계              |
+| ------------- | ------------------------------------------ | ----------------------------------------- | --------------- |
+| **User**      | userId, name, email, password              | login(), logout(), register()             | 1:N → Order     |
+| **Product**   | productId, name, price, stock, description | updateStock(), applyDiscount()            | N:M → Category  |
+| **Category**  | categoryId, name                           | addProduct(), removeProduct()             | N:M → Product   |
+| **Order**     | orderId, orderDate, status, totalAmount    | addItem(), removeItem(), calculateTotal() | 1:N → OrderItem |
+| **OrderItem** | quantity, price                            | getSubtotal()                             | 1:1 → Product   |
+| **Cart**      | cartId, createdAt                          | addItem(), removeItem(), checkout()       | 1:N → Product   |
+| **Payment**   | paymentId, method, amount                  | processPayment(), refund()                | 1:1 → Order     |
+| **Shipment**  | shipmentId, address, status                | trackShipment(), updateStatus()           | 1:1 → Order     |
+
+---
+
+2단계. 클래스 다이어그램 구조 (관계)
+
+```
+User ───< Order >─── OrderItem >─── Product
+                     │
+                     ▼
+                   Payment
+                     │
+                     ▼
+                  Shipment
+
+Product >──< Category
+User ───< Cart >──< Product
+```
+
+* `User`는 여러 개의 `Order`와 `Cart`를 가짐
+* `Order`는 여러 개의 `OrderItem`을 포함
+* `Product`는 여러 `Category`에 속할 수 있음
+* `Payment`, `Shipment`는 각 `Order`에 1:1로 연결
+
+---
+
+3단계. Visual Paradigm으로 다이어그램 설계
+
+1. **Visual Paradigm 실행** → `New Project` 선택
+2. `Diagram` → `UML` → `Class Diagram` 선택
+3. 위의 클래스들을 생성하고 속성, 메서드, 관계선 연결
+4. 다이어그램 제목: `Online Shopping Mall Class Diagram`
+5. 완료 후 **File → Export → Image (PNG/JPG)** 로 저장
