@@ -1,0 +1,117 @@
++---------------------+
+|     WeatherAPI      |
++---------------------+
+| - api_key           |
+| - base_url          |
++---------------------+
+| + fetch_weather(route_points): WeatherData |
++---------------------+
+
++---------------------+
+|     WeatherData     |
++---------------------+
+| - wind_speed        |
+| - wave_height       |
+| - current_speed     |
+| - current_direction |
++---------------------+
+| + preprocess(): dict|
++---------------------+
+
++---------------------+
+|   ShipPerformance   |
++---------------------+
+| - ship_speed        |
+| - fuel_rate         |
++---------------------+
+| + estimate_fuel(distance): float |
+| + estimate_time(distance): float |
++---------------------+
+
++-----------------------------+
+|      RouteOptimizer         |
++-----------------------------+
+| - algorithm_type            |
++-----------------------------+
+| + calculate_optimal_route(weather:WeatherData,
+|       ship:ShipPerformance,
+|       candidate_routes:list): RouteResult |
++-----------------------------+
+
++---------------------------+
+|       RouteResult         |
++---------------------------+
+| - best_route              |
+| - total_distance          |
+| - total_time              |
+| - total_fuel              |
++---------------------------+
+| + summarize(): dict       |
++---------------------------+
+
++-------------------------+
+|     MapVisualizer       |
++-------------------------+
+| - map_object            |
++-------------------------+
+| + draw(route)           |
+| + compare(routes)       |
++-------------------------+
+
++-------------------------+
+|        WebApp           |
++-------------------------+
+| - flask_app             |
++-------------------------+
+| + get_user_input()      |
+| + run_optimizer()       |
+| + render_map()          |
++-------------------------+
+
+
+User → WebApp: 요청 (출발지, 목적지)
+WebApp → WeatherAPI: 경로 지역 기상 데이터 요청
+WeatherAPI → WebApp: WeatherData 반환
+
+WebApp → WeatherData: preprocess() 호출
+WeatherData → WebApp: 정제된 기상 데이터 반환
+
+WebApp → ShipPerformance: 선박 성능 로딩
+
+WebApp → RouteOptimizer:
+   calculate_optimal_route(weather, ship, candidate_routes)
+
+RouteOptimizer → RouteOptimizer:
+   각 후보 경로별 거리/시간/연료 계산
+
+RouteOptimizer → WebApp: RouteResult 반환
+
+WebApp → MapVisualizer: draw(best_route)
+MapVisualizer → WebApp: 시각화 지도 반환
+
+WebApp → User: 최적 경로 + 지도 + 효율 지표 응답
+
+participant User
+participant WebApp
+participant WeatherAPI
+participant WeatherData
+participant ShipPerformance
+participant RouteOptimizer
+participant MapVisualizer
+
+User -> WebApp: submitRouteRequest()
+WebApp -> WeatherAPI: fetch_weather()
+WeatherAPI -> WebApp: return WeatherData
+WebApp -> WeatherData: preprocess()
+WeatherData -> WebApp: return processedData
+
+WebApp -> ShipPerformance: load ship data
+WebApp -> RouteOptimizer: calculate_optimal_route()
+
+RouteOptimizer -> RouteOptimizer: evaluate candidate routes
+RouteOptimizer -> WebApp: return RouteResult
+
+WebApp -> MapVisualizer: draw(best_route)
+MapVisualizer -> WebApp: return map visualization
+
+WebApp -> User: display optimized route
